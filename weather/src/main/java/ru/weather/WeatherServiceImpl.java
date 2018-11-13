@@ -4,33 +4,44 @@ import net.aksingh.owmjapis.api.APIException;
 import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.model.CurrentWeather;
 import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 
-
+@Component
 @Service
 public class WeatherServiceImpl implements WeatherService {
 
     private  CurrentWeather _currentWeather;
+    @Value("${owm.apikey}")
+    private String apikey;
 
 
-    public WeatherServiceImpl () throws IOException, JSONException, APIException {
+    @PostConstruct
+    public void  WeatherServiceImpl () throws IOException, JSONException  {
 
-        OWM owm = new OWM("01b5f54b9605d5bbae6cf9f831560fb5");
+        OWM owm = new OWM(apikey);
 
-        CurrentWeather forecast = owm.currentWeatherByCityName("Saint Peterburg", OWM.Country.RUSSIA);
+        try {
+            CurrentWeather forecast = owm.currentWeatherByCityName("Saint Peterburg", OWM.Country.RUSSIA);
+        } catch (APIException e) {
+            e.printStackTrace();
+        }
 
     }
 
 
-    public static void main(String[] args) throws IOException,JSONException, APIException {
+   /* public static void main(String[] args) throws IOException,JSONException {
         WeatherServiceImpl p = new WeatherServiceImpl();
 
         System.out.print(p.getTemperatureInCelsius());
         System.out.println(p.getDate());
 
-    }
+    }*/
 
         @Override
         public double getTemperatureInCelsius ()
